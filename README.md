@@ -1,0 +1,1 @@
+# ltcminer-automation
