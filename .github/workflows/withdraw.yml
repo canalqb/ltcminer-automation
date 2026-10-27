@@ -1,0 +1,34 @@
+name: Auto-Withdrawal Daily
+
+on:
+  schedule:
+    # Execute diariamente às 00:00 UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  auto-withdraw:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install requests requests-oauthlib
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      
+      - name: Run auto-withdrawal
+        env:
+          LTCMINER_EMAIL: ${{ secrets.LTCMINER_EMAIL }}
+          LTCMINER_PASSWORD: ${{ secrets.LTCMINER_PASSWORD }}
+          WITHDRAWAL_ADDRESS: ${{ secrets.WITHDRAWAL_ADDRESS }}
+          NETWORK: litecoin
+        run: |
+          python withdraw.py
